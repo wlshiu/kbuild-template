@@ -17,21 +17,31 @@
 set -o nounset                                  # Treat unset variables as an error
 set -e
 
-#export ARCH=arm
-#export CROSS_COMPILE=$HOME/work/gcc-arm-none-eabi-5_4-2016q3/bin/arm-none-eabi-
-#export PATH=$HOME/work/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include:$PATH
-#export LD_LIBRARY_PATH=$HOME/work/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/lib
+export ARCH=arm
+#export ARCH=x86
 
-export ARCH=x86
-export CROSS_COMPILE=/usr/bin/
 
-export PATH=/usr/include:$PATH
-export LD_LIBRARY_PATH=/usr/lib/i386-linux-gnu
+# $ sudo apt-get install libnewlib-arm-none-eabi gcc-arm-none-eabi gcc-arm-linux-gnueabi
 
+if [ $ARCH == 'arm' ]; then
+    #toolchain=$HOME/work/gcc-arm-none-eabi-5_4-2016q3
+    #toolchain=$HOME/gcc-arm-none-eabi-4_9-2015q1
+    toolchain=/usr
+    export CROSS_COMPILE=$toolchain/bin/arm-linux-gnueabi-
+    export PATH=$toolchain/arm-linux-gnueabi/include:$PATH
+    export LD_LIBRARY_PATH=$toolchain/arm-linux-gnueabi/lib
+else
+    toolchain=/usr
+    export CROSS_COMPILE=$toolchain/bin/
+    export PATH=$toolchain/include:$PATH
+    export LD_LIBRARY_PATH=$toolchain/lib/i386-linux-gnu
+fi
+
+echo -e "CROSS_COMPILE=$CROSS_COMPILE"
 
 cur_dir=`pwd`
 
-if [ -z .config ]; then
+if [ ! -e '.config' ]; then
     make menuconfig
 fi
 
